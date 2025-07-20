@@ -22,13 +22,20 @@ const App = () => {
   return (
     <Authenticator.Provider>
       <Authenticator>
-        <SignOutButton />
+        <SafeAreaView style={styles.container}>
+          <SignOutButton />
+          <TodoList />
+        </SafeAreaView>
       </Authenticator>
     </Authenticator.Provider>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 8,
+  },
   signOutButton: {
     alignSelf: "flex-end",
   },
