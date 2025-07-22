@@ -1,10 +1,10 @@
 import React from "react";
-import { Button, View, StyleSheet } from "react-native";
-
+import { Button, View, StyleSheet, SafeAreaView } from "react-native";
 import { Amplify } from "aws-amplify";
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react-native";
 
 import outputs from "./amplify_outputs.json";
+import TodoList from "./src/TodoList";
 
 Amplify.configure(outputs);
 
