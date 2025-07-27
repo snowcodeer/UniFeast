@@ -69,7 +69,7 @@ const defaultProfile = {
 };
 
 const Profile = () => {
-  const { user } = useAuthenticator();
+  const { user, signOut } = useAuthenticator();
   const [profile, setProfile] = useState<Schema["Profile"]["type"] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<Record<string, any>>({ ...defaultProfile });
@@ -338,6 +338,9 @@ const Profile = () => {
   // Show profile if it exists
   return (
     <View style={{ padding: 16 }}>
+      <View style={{ alignSelf: "flex-end", marginBottom: 16 }}>
+        <Button title="Sign Out" onPress={signOut} />
+      </View>
       <Text>Email: {profile.email ?? "N/A"}</Text>
       <Text>User Name: {profile.userName ?? "N/A"}</Text>
       <Text>User Identity: {profile.userIdentity ?? "N/A"}</Text>

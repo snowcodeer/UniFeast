@@ -17,18 +17,8 @@ Amplify.configure(outputs);
 
 const Tab = createBottomTabNavigator();
 
-const SignOutButton = () => {
-  const { signOut } = useAuthenticator();
-  return (
-    <View style={styles.signOutButton}>
-      <Button title="Sign Out" onPress={signOut} />
-    </View>
-  );
-};
-
 const TabScreens = () => (
   <SafeAreaView style={styles.container}>
-    <SignOutButton />
     <Tab.Navigator>
       <Tab.Screen name="Menu" component={Menu} />
       <Tab.Screen name="Map" component={Map} />
@@ -52,10 +42,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 8,
-  },
-  signOutButton: {
-    alignSelf: "flex-end",
-    marginBottom: 8,
   },
   center: {
     flex: 1,
