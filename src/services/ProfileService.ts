@@ -24,16 +24,7 @@ export class ProfileService {
       peanutsAllergy: false,
       treeNutsAllergy: false,
       shellfishAllergy: false,
-      celery: false,
-      gluten: false,
-      crustaceans: false,
-      fish: false,
-      lupin: false,
-      molluscs: false,
-      mustard: false,
-      sesame: false,
-      soybeans: false,
-      sulphites: false,
+      otherAllergens: "",
     });
     return data;
   }
@@ -51,16 +42,7 @@ export class ProfileService {
       peanutsAllergy,
       treeNutsAllergy,
       shellfishAllergy,
-      celery,
-      gluten,
-      crustaceans,
-      fish,
-      lupin,
-      molluscs,
-      mustard,
-      sesame,
-      soybeans,
-      sulphites,
+      otherAllergens,
     } = profile;
     const input = {
       id, // used as identifier, not editable
@@ -73,16 +55,7 @@ export class ProfileService {
       peanutsAllergy,
       treeNutsAllergy,
       shellfishAllergy,
-      celery,
-      gluten,
-      crustaceans,
-      fish,
-      lupin,
-      molluscs,
-      mustard,
-      sesame,
-      soybeans,
-      sulphites,
+      otherAllergens,
     };
     const { data } = await client.models.Profile.update(input);
     return data;

@@ -14,16 +14,7 @@ const schema = a.schema({
       peanutsAllergy: a.boolean().default(false),
       treeNutsAllergy: a.boolean().default(false),
       shellfishAllergy: a.boolean().default(false),
-      celery: a.boolean().default(false),
-      gluten: a.boolean().default(false),
-      crustaceans: a.boolean().default(false),
-      fish: a.boolean().default(false),
-      lupin: a.boolean().default(false),
-      molluscs: a.boolean().default(false),
-      mustard: a.boolean().default(false),
-      sesame: a.boolean().default(false),
-      soybeans: a.boolean().default(false),
-      sulphites: a.boolean().default(false),
+      otherAllergens: a.string(),
       // Remove created_at and updated_at, Amplify adds these automatically
     })
     .authorization(allow => [allow.owner()])

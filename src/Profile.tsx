@@ -65,16 +65,7 @@ const defaultProfile = {
   peanutsAllergy: false,
   treeNutsAllergy: false,
   shellfishAllergy: false,
-  celery: false,
-  gluten: false,
-  crustaceans: false,
-  fish: false,
-  lupin: false,
-  molluscs: false,
-  mustard: false,
-  sesame: false,
-  soybeans: false,
-  sulphites: false,
+  otherAllergens: "",
 };
 
 const Profile = () => {
@@ -102,10 +93,18 @@ const Profile = () => {
   // When entering edit mode, prefill form with current profile
   useEffect(() => {
     if (editing && profile) {
-      const toggled = ALL_ALLERGENS.reduce((acc, a) => {
+      // Handle main 5 allergens as booleans
+      const mainAllergens = MAIN_5_ALLERGENS.reduce((acc, a) => {
         acc[a.key] = !!(profile as any)[a.key];
         return acc;
       }, {} as Record<string, boolean>);
+      
+      // Handle extra allergens from otherAllergens string
+      const extraAllergens = EXTRA_ALLERGENS.reduce((acc, a) => {
+        acc[a.key] = profile.otherAllergens?.includes(a.label) || false;
+        return acc;
+      }, {} as Record<string, boolean>);
+      
       setForm({
         userIdentity: profile.userIdentity ?? "student",
         userName: profile.userName ?? "",
@@ -113,7 +112,8 @@ const Profile = () => {
           ? profile.dietaryPreferences.split(",").filter(Boolean)
           : [],
         periodPlan: profile.periodPlan ?? "",
-        ...toggled,
+        ...mainAllergens,
+        ...extraAllergens,
       });
     }
   }, [editing, profile]);
@@ -121,6 +121,13 @@ const Profile = () => {
   const handleCreate = async () => {
     try {
       const { ...formFields } = form;
+      
+      // Collect extra allergens that are toggled on
+      const otherAllergens = EXTRA_ALLERGENS
+        .filter(allergen => formFields[allergen.key])
+        .map(allergen => allergen.label)
+        .join(",");
+      
       const { data: created, errors } = await client.models.Profile.create({
         id: user.userId,
         email: formFields.email ?? user.signInDetails?.loginId ?? "",
@@ -133,16 +140,7 @@ const Profile = () => {
         peanutsAllergy: formFields.peanutsAllergy,
         treeNutsAllergy: formFields.treeNutsAllergy,
         shellfishAllergy: formFields.shellfishAllergy,
-        celery: formFields.celery,
-        gluten: formFields.gluten,
-        crustaceans: formFields.crustaceans,
-        fish: formFields.fish,
-        lupin: formFields.lupin,
-        molluscs: formFields.molluscs,
-        mustard: formFields.mustard,
-        sesame: formFields.sesame,
-        soybeans: formFields.soybeans,
-        sulphites: formFields.sulphites,
+        otherAllergens,
       });
       if (errors && errors.length > 0) {
         setError(errors.map(e => e.message).join(", "));
@@ -157,6 +155,13 @@ const Profile = () => {
   const handleUpdate = async () => {
     try {
       const { ...formFields } = form;
+      
+      // Collect extra allergens that are toggled on
+      const otherAllergens = EXTRA_ALLERGENS
+        .filter(allergen => formFields[allergen.key])
+        .map(allergen => allergen.label)
+        .join(",");
+      
       const { data: updated, errors } = await client.models.Profile.update({
         id: user.userId,
         userName: formFields.userName,
@@ -168,16 +173,7 @@ const Profile = () => {
         peanutsAllergy: formFields.peanutsAllergy,
         treeNutsAllergy: formFields.treeNutsAllergy,
         shellfishAllergy: formFields.shellfishAllergy,
-        celery: formFields.celery,
-        gluten: formFields.gluten,
-        crustaceans: formFields.crustaceans,
-        fish: formFields.fish,
-        lupin: formFields.lupin,
-        molluscs: formFields.molluscs,
-        mustard: formFields.mustard,
-        sesame: formFields.sesame,
-        soybeans: formFields.soybeans,
-        sulphites: formFields.sulphites,
+        otherAllergens,
       });
       if (errors && errors.length > 0) {
         setError(errors.map(e => e.message).join(", "));
@@ -354,7 +350,10 @@ const Profile = () => {
       <Text>Period Plan: {profile.periodPlan ?? "N/A"}</Text>
       <Text style={{ marginTop: 12, fontWeight: "bold" }}>Allergies:</Text>
       <Text>
-        {ALL_ALLERGENS.filter(a => (profile as any)[a.key]).map(a => a.label).join(", ") || "None"}
+        {[
+          ...MAIN_5_ALLERGENS.filter(a => (profile as any)[a.key]).map(a => a.label),
+          ...(profile.otherAllergens ? profile.otherAllergens.split(",").filter(Boolean) : [])
+        ].join(", ") || "None"}
       </Text>
       <Button title="Edit Profile" onPress={() => setEditing(true)} />
     </View>
