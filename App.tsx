@@ -7,9 +7,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import outputs from "./amplify_outputs.json";
 import Profile from "./src/Profile";
-
-// Placeholder components for new tabs
-const Menu = () => <View style={styles.center}><Button title="Menu Placeholder" onPress={() => {}} /></View>;
+import Menu from "./src/Menu";
 const Map = () => <View style={styles.center}><Button title="Map Placeholder" onPress={() => {}} /></View>;
 const Deals = () => <View style={styles.center}><Button title="Deals Placeholder" onPress={() => {}} /></View>;
 
