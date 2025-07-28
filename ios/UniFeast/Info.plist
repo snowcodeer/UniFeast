@@ -70,5 +70,9 @@
     <string>Light</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>UniFeast needs location access to show your position on the campus map and provide navigation assistance.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>UniFeast needs location access to show your position on the campus map and provide navigation assistance.</string>
   </dict>
 </plist>

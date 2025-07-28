@@ -6,8 +6,16 @@ const client = generateClient<Schema>();
 
 export class ProfileService {
   static async getProfile(id: string) {
-    const { data } = await client.models.Profile.get({ id });
-    return data;
+    try {
+      const { data } = await client.models.Profile.get({ id });
+      return data;
+    } catch (error: any) {
+      // If profile doesn't exist, return null instead of throwing
+      if (error.message && error.message.includes('not found')) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   static async createProfile(id: string, email: string) {

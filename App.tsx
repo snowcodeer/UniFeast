@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import outputs from "./amplify_outputs.json";
 import Profile from "./src/Profile";
 import Menu from "./src/Menu";
-const Map = () => <View style={styles.center}><Button title="Map Placeholder" onPress={() => {}} /></View>;
+import Map from "./src/Map";
 const Deals = () => <View style={styles.center}><Button title="Deals Placeholder" onPress={() => {}} /></View>;
 
 Amplify.configure(outputs);
