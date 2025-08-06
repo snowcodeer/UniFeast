@@ -1,7 +1,6 @@
 // src/Profile.tsx
 import { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Switch } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../amplify/data/resource";
 import { useAuthenticator } from "@aws-amplify/ui-react-native";
@@ -20,11 +19,11 @@ const DIETARY_OPTIONS = [
 ];
 
 const ALL_ALLERGENS = [
-  { key: "milkAllergy", label: "Milk" },
-  { key: "eggsAllergy", label: "Eggs" },
-  { key: "peanutsAllergy", label: "Peanuts" },
-  { key: "treeNutsAllergy", label: "Tree nuts" },
-  { key: "shellfishAllergy", label: "Shellfish" },
+  { key: "milk_allergy", label: "Milk" },
+  { key: "eggs_allergy", label: "Eggs" },
+  { key: "peanuts_allergy", label: "Peanuts" },
+  { key: "tree_nuts_allergy", label: "Tree nuts" },
+  { key: "shellfish_allergy", label: "Shellfish" },
   { key: "celery", label: "Celery" },
   { key: "gluten", label: "Cereals containing gluten" },
   { key: "crustaceans", label: "Crustaceans" },
@@ -42,16 +41,15 @@ const getMainAllergens = () => ALL_ALLERGENS.slice(0, 5);
 const getExtraAllergens = () => ALL_ALLERGENS.slice(5);
 
 const defaultProfile = {
-  userIdentity: "student",
-  userName: "",
-  dietaryPreferences: [] as string[],
-  periodPlan: "",
-  milkAllergy: false,
-  eggsAllergy: false,
-  peanutsAllergy: false,
-  treeNutsAllergy: false,
-  shellfishAllergy: false,
-  otherAllergens: "",
+  user_name: "",
+  dietary_preferences: [] as string[],
+  period_plan: "",
+  milk_allergy: false,
+  eggs_allergy: false,
+  peanuts_allergy: false,
+  tree_nuts_allergy: false,
+  shellfish_allergy: false,
+  other_allergies: "",
 };
 
 function ProfileForm({
@@ -73,10 +71,10 @@ function ProfileForm({
 
   const toggleDietary = (option: string) => {
     setForm(f => {
-      const selected = f.dietaryPreferences.includes(option)
-        ? f.dietaryPreferences.filter((o: string) => o !== option)
-        : [...f.dietaryPreferences, option];
-      return { ...f, dietaryPreferences: selected };
+      const selected = f.dietary_preferences.includes(option)
+        ? f.dietary_preferences.filter((o: string) => o !== option)
+        : [...f.dietary_preferences, option];
+      return { ...f, dietary_preferences: selected };
     });
   };
 
@@ -89,21 +87,10 @@ function ProfileForm({
       <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 8 }}>{submitLabel} Profile</Text>
       <Text>Name:</Text>
       <TextInput
-        value={form.userName}
-        onChangeText={v => setForm(f => ({ ...f, userName: v }))}
+        value={form.user_name}
+        onChangeText={v => setForm(f => ({ ...f, user_name: v }))}
         style={{ borderWidth: 1, marginBottom: 8, padding: 4 }}
       />
-      <Text>Identity:</Text>
-      <View style={{ borderWidth: 1, marginBottom: 8 }}>
-        <Picker
-          selectedValue={form.userIdentity}
-          onValueChange={v => setForm(f => ({ ...f, userIdentity: v }))}
-        >
-          <Picker.Item label="Student" value="student" />
-          <Picker.Item label="Staff" value="staff" />
-          <Picker.Item label="Visitor" value="visitor" />
-        </Picker>
-      </View>
       <Text>Dietary Preferences:</Text>
       {DIETARY_OPTIONS.map(option => (
         <TouchableOpacity
@@ -122,7 +109,7 @@ function ProfileForm({
               borderWidth: 1,
               borderColor: "#333",
               marginRight: 8,
-              backgroundColor: form.dietaryPreferences.includes(option) ? "#333" : "#fff",
+              backgroundColor: form.dietary_preferences.includes(option) ? "#333" : "#fff",
             }}
           />
           <Text>{option}</Text>
@@ -130,8 +117,8 @@ function ProfileForm({
       ))}
       <Text>Period Plan:</Text>
       <TextInput
-        value={form.periodPlan}
-        onChangeText={v => setForm(f => ({ ...f, periodPlan: v }))}
+        value={form.period_plan}
+        onChangeText={v => setForm(f => ({ ...f, period_plan: v }))}
         style={{ borderWidth: 1, marginBottom: 8, padding: 4 }}
       />
       <Text style={{ marginTop: 12, fontWeight: "bold" }}>Allergies (toggle):</Text>
@@ -179,18 +166,17 @@ const Profile = () => {
       acc[a.key] = !!(profile as any)[a.key];
       return acc;
     }, {} as Record<string, boolean>);
-    // Handle extra allergens from otherAllergens string
+    // Handle extra allergens from other_allergies string
     const extraAllergens = getExtraAllergens().reduce((acc: Record<string, boolean>, a) => {
-      acc[a.key] = profile.otherAllergens?.includes(a.label) || false;
+      acc[a.key] = profile.other_allergies?.includes(a.label) || false;
       return acc;
     }, {} as Record<string, boolean>);
     return {
-      userIdentity: profile.userIdentity ?? "student",
-      userName: profile.userName ?? "",
-      dietaryPreferences: profile.dietaryPreferences
-        ? profile.dietaryPreferences.split(",").filter(Boolean)
+      user_name: profile.user_name ?? "",
+      dietary_preferences: profile.dietary_preferences
+        ? profile.dietary_preferences.split(",").filter(Boolean)
         : [],
-      periodPlan: profile.periodPlan ?? "",
+      period_plan: profile.period_plan ?? "",
       ...mainAllergens,
       ...extraAllergens,
     };
@@ -199,7 +185,7 @@ const Profile = () => {
   const handleCreate = async (form: Record<string, any>) => {
     try {
       // Collect extra allergens that are toggled on
-      const otherAllergens = getExtraAllergens()
+      const other_allergies = getExtraAllergens()
         .filter((allergen: any) => form[allergen.key])
         .map((allergen: any) => allergen.label)
         .join(",");
@@ -210,16 +196,15 @@ const Profile = () => {
       // Update the created profile with the form data
       const updated = await ProfileService.updateProfile({
         id: user.userId,
-        userName: form.userName,
-        userIdentity: form.userIdentity as "student" | "staff" | "visitor",
-        dietaryPreferences: form.dietaryPreferences.join(","),
-        periodPlan: form.periodPlan,
-        milkAllergy: form.milkAllergy,
-        eggsAllergy: form.eggsAllergy,
-        peanutsAllergy: form.peanutsAllergy,
-        treeNutsAllergy: form.treeNutsAllergy,
-        shellfishAllergy: form.shellfishAllergy,
-        otherAllergens,
+        user_name: form.user_name,
+        dietary_preferences: form.dietary_preferences.join(","),
+        period_plan: form.period_plan,
+        milk_allergy: form.milk_allergy,
+        eggs_allergy: form.eggs_allergy,
+        peanuts_allergy: form.peanuts_allergy,
+        tree_nuts_allergy: form.tree_nuts_allergy,
+        shellfish_allergy: form.shellfish_allergy,
+        other_allergies,
       });
       setProfile(updated);
     } catch (err: any) {
@@ -230,22 +215,21 @@ const Profile = () => {
   const handleUpdate = async (form: Record<string, any>) => {
     try {
       // Collect extra allergens that are toggled on
-      const otherAllergens = getExtraAllergens()
+      const other_allergies = getExtraAllergens()
         .filter((allergen: any) => form[allergen.key])
         .map((allergen: any) => allergen.label)
         .join(",");
       const updated = await ProfileService.updateProfile({
         id: user.userId,
-        userName: form.userName,
-        userIdentity: form.userIdentity as "student" | "staff" | "visitor",
-        dietaryPreferences: form.dietaryPreferences.join(","),
-        periodPlan: form.periodPlan,
-        milkAllergy: form.milkAllergy,
-        eggsAllergy: form.eggsAllergy,
-        peanutsAllergy: form.peanutsAllergy,
-        treeNutsAllergy: form.treeNutsAllergy,
-        shellfishAllergy: form.shellfishAllergy,
-        otherAllergens,
+        user_name: form.user_name,
+        dietary_preferences: form.dietary_preferences.join(","),
+        period_plan: form.period_plan,
+        milk_allergy: form.milk_allergy,
+        eggs_allergy: form.eggs_allergy,
+        peanuts_allergy: form.peanuts_allergy,
+        tree_nuts_allergy: form.tree_nuts_allergy,
+        shellfish_allergy: form.shellfish_allergy,
+        other_allergies,
       });
       setProfile(updated);
       setEditing(false);
@@ -284,20 +268,19 @@ const Profile = () => {
         <Button title="Sign Out" onPress={signOut} />
       </View>
       <Text>Email: {profile.email ?? "N/A"}</Text>
-      <Text>Name: {profile.userName ?? "N/A"}</Text>
-      <Text>Identity: {profile.userIdentity ?? "N/A"}</Text>
+      <Text>Name: {profile.user_name ?? "N/A"}</Text>
       <Text>
         Dietary Preferences:{" "}
-        {profile.dietaryPreferences
-          ? profile.dietaryPreferences.split(",").filter(Boolean).join(", ")
+        {profile.dietary_preferences
+          ? profile.dietary_preferences.split(",").filter(Boolean).join(", ")
           : "None"}
       </Text>
-      <Text>Period Plan: {profile.periodPlan ?? "N/A"}</Text>
+      <Text>Period Plan: {profile.period_plan ?? "N/A"}</Text>
       <Text style={{ marginTop: 12, fontWeight: "bold" }}>Allergies:</Text>
       <Text>
         {[
           ...getMainAllergens().filter((a: any) => (profile as any)[a.key]).map((a: any) => a.label),
-          ...(profile.otherAllergens ? profile.otherAllergens.split(",").filter(Boolean) : [])
+          ...(profile.other_allergies ? profile.other_allergies.split(",").filter(Boolean) : [])
         ].join(", ") || "None"}
       </Text>
       <Button title="Edit Profile" onPress={() => setEditing(true)} />

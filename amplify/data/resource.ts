@@ -4,17 +4,17 @@ const schema = a.schema({
   Profile: a
     .model({
       id: a.id().required(),
-      userName: a.string(),
+      user_name: a.string(),
       email: a.email(),
-      userIdentity: a.enum(['student', 'staff', 'visitor']),
-      dietaryPreferences: a.string(),
-      periodPlan: a.string(),
-      milkAllergy: a.boolean().default(false),
-      eggsAllergy: a.boolean().default(false),
-      peanutsAllergy: a.boolean().default(false),
-      treeNutsAllergy: a.boolean().default(false),
-      shellfishAllergy: a.boolean().default(false),
-      otherAllergens: a.string(),
+      dietary_preferences: a.string(),
+      period_plan: a.string(),
+      milk_allergy: a.boolean().default(false),
+      eggs_allergy: a.boolean().default(false),
+      peanuts_allergy: a.boolean().default(false),
+      tree_nuts_allergy: a.boolean().default(false),
+      shellfish_allergy: a.boolean().default(false),
+      other_allergies: a.string(),
+      session_data: a.string(), // JSONB equivalent in Amplify
       // Remove created_at and updated_at, Amplify adds these automatically
     })
     .authorization(allow => [allow.owner()])
